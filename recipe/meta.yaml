@@ -26,10 +26,13 @@ build:
     # X64_INTEL_CORE is the TARGET setting more similar to nocona, so we used that for
     # no microarch_level and microarch_level == 1
     # microarch_level == 3 has AVX and AVX2, so it is basically TARGET X64_INTEL_HASWELL
-    - BLASFEO_TARGET=GENERIC  # [not x86_64]
-    - BLASFEO_TARGET=X64_INTEL_CORE  # [(not linux) and x86_64]
-    - BLASFEO_TARGET=X64_INTEL_CORE  # [linux and x86_64 and microarch_level == 1]
-    - BLASFEO_TARGET=X64_INTEL_HASWELL  # [linux and x86_64 and microarch_level == 3]
+    # Commented as a workaround for https://github.com/conda-forge/blasfeo-feedstock/pull/9,
+    # we can re-enable optimized code once new release of blasfeo is released
+    #- BLASFEO_TARGET=GENERIC  # [not x86_64]
+    #- BLASFEO_TARGET=X64_INTEL_CORE  # [(not linux) and x86_64]
+    #- BLASFEO_TARGET=X64_INTEL_CORE  # [linux and x86_64 and microarch_level == 1]
+    #- BLASFEO_TARGET=X64_INTEL_HASWELL  # [linux and x86_64 and microarch_level == 3]
+    - BLASFEO_TARGET=GENERIC
 
 requirements:
   build:
