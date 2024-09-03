@@ -1,6 +1,6 @@
 {% set name = "libblasfeo" %}
 {% set version = "0.1.3" %}
-{% set build = 2 %}
+{% set build = 3 %}
 
 package:
   name: {{ name }}
@@ -9,6 +9,9 @@ package:
 source:
   - url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
     sha256: c33eb6467a90d6075a8db34e5ab239ecdda38c5261ae096def122fe7a0f98780
+    patches:
+      - fix_missing_symbols.patch
+      - skip_blas_tests.patch
 
 build:
   # windows and macos are supported on the master branch, as soon as a new version is released
