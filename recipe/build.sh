@@ -10,6 +10,7 @@ cd build
 cmake ${CMAKE_ARGS} -GNinja .. \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_TESTING:BOOL=ON \
+      -DBLASFEO_TESTING:BOOL=ON \
       -DBUILD_SHARED_LIBS:BOOL=ON \
       -DTARGET=${BLASFEO_TARGET}
 
