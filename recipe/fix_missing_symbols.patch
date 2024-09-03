@@ -1,0 +1,393 @@
+From a759241e98769bf94db395120c54f061925f8606 Mon Sep 17 00:00:00 2001
+From: giaf <gianfri2008@hotmail.it>
+Date: Wed, 23 Mar 2022 15:58:43 +0100
+Subject: [PATCH] some fixes for cmake
+
+---
+ CMakeLists.txt                    | 35 +++++++++++++++++---------
+ Makefile                          | 22 ++++++++--------
+ kernel/generic/Makefile           | 23 +++++++++--------
+ kernel/generic/kernel_dger_lib4.c | 42 +++++++++++++++++++++++++++++++
+ 4 files changed, 88 insertions(+), 34 deletions(-)
+ create mode 100644 kernel/generic/kernel_dger_lib4.c
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ae60bf48..dbf8f915 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -493,6 +493,7 @@ file(GLOB BLASFEO_HP_CM_SRC
+ 	${PROJECT_SOURCE_DIR}/blasfeo_hp_cm/dpotrf.c
+ 	${PROJECT_SOURCE_DIR}/blasfeo_hp_cm/dgetrf.c
+ 	${PROJECT_SOURCE_DIR}/blasfeo_hp_cm/dgetr.c
++	${PROJECT_SOURCE_DIR}/blasfeo_hp_cm/dgemv.c
+ 	${PROJECT_SOURCE_DIR}/blasfeo_hp_cm/dsymv.c
+ 	${PROJECT_SOURCE_DIR}/blasfeo_hp_cm/dger.c
+ 
+@@ -651,10 +652,11 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgemm_diag_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dpack_lib4.S
+-	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgetr_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgetr_lib.S
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgemv_4_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dsymv_4_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 
+@@ -699,10 +701,11 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dpack_lib4.S
+-	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgetr_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/avx/kernel_dgetr_lib.S
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgemv_4_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dsymv_4_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 
+@@ -742,7 +745,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+@@ -778,7 +782,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+@@ -819,7 +824,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+@@ -869,7 +875,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+@@ -911,7 +918,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+@@ -949,7 +957,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+@@ -986,7 +995,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgecp_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+@@ -1022,7 +1032,8 @@ file(GLOB KERNEL_SRC
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetrf_pivot_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgeqrf_4_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_lib4.c
+-	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dpack_buffer_lib4.c
++	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dger_lib4.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_ddot_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_daxpy_lib.c
+ 	${PROJECT_SOURCE_DIR}/kernel/generic/kernel_dgetr_lib.c
+diff --git a/Makefile b/Makefile
+index 3c5f5e43..eda77b5f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -286,7 +286,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgemv_4_lib4.o \
+ 		kernel/generic/kernel_dsymv_4_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		\
+@@ -337,7 +337,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgemv_4_lib4.o \
+ 		kernel/generic/kernel_dsymv_4_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		\
+@@ -380,7 +380,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -417,7 +417,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -454,7 +454,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -494,7 +494,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -536,7 +536,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -587,7 +587,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -629,7 +629,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -668,7 +668,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgetr_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+@@ -705,7 +705,7 @@ KERNEL_OBJS = \
+ 		kernel/generic/kernel_dgeqrf_4_lib4.o \
+ 		kernel/generic/kernel_dpack_lib4.o \
+ 		kernel/generic/kernel_dpack_buffer_lib4.o \
+-		kernel/generic/kernel_dger_lib.o \
++		kernel/generic/kernel_dger_lib4.o \
+ 		kernel/generic/kernel_ddot_lib.o \
+ 		kernel/generic/kernel_daxpy_lib.o \
+ 		kernel/generic/kernel_dgetr_lib.o \
+diff --git a/kernel/generic/Makefile b/kernel/generic/Makefile
+index 9b2e8f51..c90787c0 100644
+--- a/kernel/generic/Makefile
++++ b/kernel/generic/Makefile
+@@ -40,7 +40,7 @@ ifeq ($(TARGET), X64_INTEL_HASWELL)
+ KERNEL_OBJS = kernel_dgemv_4_lib4.o \
+ 		kernel_dsymv_4_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		\
+@@ -61,7 +61,7 @@ ifeq ($(TARGET), X64_INTEL_SANDY_BRIDGE)
+ KERNEL_OBJS = kernel_dgemv_4_lib4.o \
+ 		kernel_dsymv_4_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		\
+@@ -90,7 +90,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -122,7 +122,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -154,7 +154,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -186,7 +186,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -218,7 +218,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -250,7 +250,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -282,7 +282,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -316,7 +316,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -350,7 +350,7 @@ KERNEL_OBJS = \
+ 		kernel_dgetr_lib4.o \
+ 		kernel_dpack_lib4.o \
+ 		kernel_dpack_buffer_lib4.o \
+-		kernel_dger_lib.o \
++		kernel_dger_lib4.o \
+ 		kernel_ddot_lib.o \
+ 		kernel_daxpy_lib.o \
+ 		kernel_dgetr_lib.o \
+@@ -397,4 +397,5 @@ clean:
+ kernel_dgemm_4x4_lib4.o: kernel_dgemm_4x4_lib4.c kernel_dgemm_4x4_lib.c
+ kernel_dgemv_4_lib4.o: kernel_dgemv_4_lib4.c kernel_dgemv_4_lib.c
+ kernel_dsymv_4_lib4.o: kernel_dsymv_4_lib4.c kernel_dsymv_4_lib.c
++kernel_dger_lib4.o: kernel_dger_lib4.c kernel_dger_lib.c
+ kernel_sgemm_4x4_lib4.o: kernel_sgemm_4x4_lib4.c kernel_sgemm_4x4_lib.c
+diff --git a/kernel/generic/kernel_dger_lib4.c b/kernel/generic/kernel_dger_lib4.c
+new file mode 100644
+index 00000000..4be5decc
+--- /dev/null
++++ b/kernel/generic/kernel_dger_lib4.c
+@@ -0,0 +1,42 @@
++/**************************************************************************************************
++*                                                                                                 *
++* This file is part of BLASFEO.                                                                   *
++*                                                                                                 *
++* BLASFEO -- BLAS For Embedded Optimization.                                                      *
++* Copyright (C) 2019 by Gianluca Frison.                                                          *
++* Developed at IMTEK (University of Freiburg) under the supervision of Moritz Diehl.              *
++* All rights reserved.                                                                            *
++*                                                                                                 *
++* The 2-Clause BSD License                                                                        *
++*                                                                                                 *
++* Redistribution and use in source and binary forms, with or without                              *
++* modification, are permitted provided that the following conditions are met:                     *
++*                                                                                                 *
++* 1. Redistributions of source code must retain the above copyright notice, this                  *
++*    list of conditions and the following disclaimer.                                             *
++* 2. Redistributions in binary form must reproduce the above copyright notice,                    *
++*    this list of conditions and the following disclaimer in the documentation                    *
++*    and/or other materials provided with the distribution.                                       *
++*                                                                                                 *
++* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND                 *
++* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED                   *
++* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE                          *
++* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR                 *
++* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES                  *
++* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;                    *
++* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND                     *
++* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT                      *
++* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS                   *
++* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                    *
++*                                                                                                 *
++* Author: Gianluca Frison, gianluca.frison (at) imtek.uni-freiburg.de                             *
++*                                                                                                 *
++**************************************************************************************************/
++
++//#if defined(BLAS_API)
++#if ( defined(BLAS_API) | ( defined(LA_HIGH_PERFORMANCE) & defined(MF_COLMAJ) ) )
++
++#include "kernel_dger_lib.c"
++
++#endif
++
