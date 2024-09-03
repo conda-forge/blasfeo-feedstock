@@ -10,7 +10,6 @@ source:
   - url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
     sha256: c33eb6467a90d6075a8db34e5ab239ecdda38c5261ae096def122fe7a0f98780
     patches:
-      - fix_missing_symbols.patch
       - skip_blas_tests.patch
 
 build:
@@ -46,6 +45,7 @@ test:
     - test -f $PREFIX/include/blasfeo.h  # [unix]
     - test -f $PREFIX/lib/libblasfeo${SHLIB_EXT}  # [unix]
     - test -f $PREFIX/cmake/blasfeoConfig.cmake   # [unix]
+    - nm -s $PREFIX/lib/libblasfeo.so | grep "U "  # [linux]
     - if not exist %PREFIX%\\Library\\cmake\\blasfeoConfig.cmake exit 1  # [win]
     - if not exist %LIBRARY_INC%\\blasfeo.h exit 1  # [win]
     - if not exist %LIBRARY_LIB%\\blasfeo.lib exit 1  # [win]
