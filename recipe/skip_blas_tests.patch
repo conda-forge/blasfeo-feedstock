@@ -1,0 +1,37 @@
+From 8b0246a82c2b7ce9574ee667fff54ad931b5ebdd Mon Sep 17 00:00:00 2001
+From: Silvio Traversaro <silvio@traversaro.it>
+Date: Tue, 3 Sep 2024 15:47:48 +0200
+Subject: [PATCH] Do not build tests that require blas
+
+---
+ tests/CMakeLists.txt | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 19c351d7..67403958 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -36,17 +36,17 @@
+ 
+ add_executable(test_d_blasfeo_api test_d_blasfeo_api.c)
+ add_executable(test_s_blasfeo_api test_s_blasfeo_api.c)
+-add_executable(test_d_blas_api test_d_blas_api.c)
+-add_executable(test_s_blas_api test_s_blas_api.c)
++#add_executable(test_d_blas_api test_d_blas_api.c)
++#add_executable(test_s_blas_api test_s_blas_api.c)
+ 
+ if(CMAKE_C_COMPILER_ID MATCHES MSVC) # no explicit math library
+ 	target_link_libraries(test_d_blasfeo_api blasfeo)
+ 	target_link_libraries(test_s_blasfeo_api blasfeo)
+-	target_link_libraries(test_d_blas_api blasfeo)
+-	target_link_libraries(test_s_blas_api blasfeo)
++	#target_link_libraries(test_d_blas_api blasfeo)
++	#target_link_libraries(test_s_blas_api blasfeo)
+ else() # add explicit math library
+ 	target_link_libraries(test_d_blasfeo_api blasfeo m)
+ 	target_link_libraries(test_s_blasfeo_api blasfeo m)
+-	target_link_libraries(test_d_blas_api blasfeo m)
+-	target_link_libraries(test_s_blas_api blasfeo m)
++	#target_link_libraries(test_d_blas_api blasfeo m)
++	#target_link_libraries(test_s_blas_api blasfeo m)
+ endif()
