@@ -1,6 +1,6 @@
 {% set name = "libblasfeo" %}
 {% set version = "0.1.3" %}
-{% set build = 2 %}
+{% set build = 3 %}
 
 package:
   name: {{ name }}
@@ -9,6 +9,8 @@ package:
 source:
   - url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
     sha256: c33eb6467a90d6075a8db34e5ab239ecdda38c5261ae096def122fe7a0f98780
+    patches:
+      - skip_blas_tests.patch
 
 build:
   # windows and macos are supported on the master branch, as soon as a new version is released
@@ -24,10 +26,13 @@ build:
     # X64_INTEL_CORE is the TARGET setting more similar to nocona, so we used that for
     # no microarch_level and microarch_level == 1
     # microarch_level == 3 has AVX and AVX2, so it is basically TARGET X64_INTEL_HASWELL
-    - BLASFEO_TARGET=GENERIC  # [not x86_64]
-    - BLASFEO_TARGET=X64_INTEL_CORE  # [(not linux) and x86_64]
-    - BLASFEO_TARGET=X64_INTEL_CORE  # [linux and x86_64 and microarch_level == 1]
-    - BLASFEO_TARGET=X64_INTEL_HASWELL  # [linux and x86_64 and microarch_level == 3]
+    # Commented as a workaround for https://github.com/conda-forge/blasfeo-feedstock/pull/9,
+    # we can re-enable optimized code once new release of blasfeo is released
+    #- BLASFEO_TARGET=GENERIC  # [not x86_64]
+    #- BLASFEO_TARGET=X64_INTEL_CORE  # [(not linux) and x86_64]
+    #- BLASFEO_TARGET=X64_INTEL_CORE  # [linux and x86_64 and microarch_level == 1]
+    #- BLASFEO_TARGET=X64_INTEL_HASWELL  # [linux and x86_64 and microarch_level == 3]
+    - BLASFEO_TARGET=GENERIC
 
 requirements:
   build:
@@ -43,6 +48,7 @@ test:
     - test -f $PREFIX/include/blasfeo.h  # [unix]
     - test -f $PREFIX/lib/libblasfeo${SHLIB_EXT}  # [unix]
     - test -f $PREFIX/cmake/blasfeoConfig.cmake   # [unix]
+    - nm -s $PREFIX/lib/libblasfeo.so | grep "U "  # [linux]
     - if not exist %PREFIX%\\Library\\cmake\\blasfeoConfig.cmake exit 1  # [win]
     - if not exist %LIBRARY_INC%\\blasfeo.h exit 1  # [win]
     - if not exist %LIBRARY_LIB%\\blasfeo.lib exit 1  # [win]
