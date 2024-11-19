@@ -30,7 +30,10 @@ build:
     - BLASFEO_TARGET=X64_INTEL_SKYLAKE_X  # [x86_64 and microarch_level == 4]
     # Modern arm processors (e.g. X Elite) have cache sizes more similar to the
     # M1 from Apple, thus we set TARGET to ARMV8A_APPLE_M1
-    - BLASFEO_TARGET=ARMV8A_APPLE_M1  # [aarch64 or arm64]
+    - BLASFEO_TARGET=ARMV8A_APPLE_M1  # [arm64]
+    # On linux the main targets are mostly embedded systems like
+    # Raspberry Pis, hence we target the  CORTEX A76.
+    - BLASFEO_TARGET=ARMV8A_ARM_CORTEX_A76  # [aarch64]
 
 requirements:
   build:
