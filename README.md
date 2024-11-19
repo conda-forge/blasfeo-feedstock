@@ -183,5 +183,6 @@ In order to produce a uniquely identifiable distribution:
 Feedstock Maintainers
 =====================
 
+* [@RSchwan](https://github.com/RSchwan/)
 * [@traversaro](https://github.com/traversaro/)
 
