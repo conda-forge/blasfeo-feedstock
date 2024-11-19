@@ -14,9 +14,6 @@ jobs:
       osx_64_microarch_level3:
         CONFIG: osx_64_microarch_level3
         UPLOAD_PACKAGES: 'True'
-      osx_64_microarch_level4:
-        CONFIG: osx_64_microarch_level4
-        UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
   variables: {}
 

@@ -14,9 +14,6 @@ jobs:
       win_64_microarch_level3:
         CONFIG: win_64_microarch_level3
         UPLOAD_PACKAGES: 'True'
-      win_64_microarch_level4:
-        CONFIG: win_64_microarch_level4
-        UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
   variables:
     CONDA_BLD_PATH: D:\\bld\\
