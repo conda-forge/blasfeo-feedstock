@@ -63,4 +63,5 @@ about:
 extra:
   feedstock-name: blasfeo
   recipe-maintainers:
+    - RSchwan
     - traversaro
