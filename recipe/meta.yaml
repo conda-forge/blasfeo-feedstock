@@ -48,6 +48,8 @@ requirements:
     - pkg-config
     - ninja
     - clang  # [win]
+  run:
+    - _x86_64-microarch-level >={{ microarch_level }}  # [x86_64]
 
 test:
   commands:
