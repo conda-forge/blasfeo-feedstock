@@ -27,7 +27,7 @@ build:
     - BLASFEO_TARGET=GENERIC  # [not (x86_64 or aarch64 or arm64)]
     - BLASFEO_TARGET=X64_INTEL_CORE  # [x86_64 and microarch_level == 1]
     - BLASFEO_TARGET=X64_INTEL_HASWELL  # [x86_64 and microarch_level == 3]
-    - BLASFEO_TARGET=X64_INTEL_SKYLAKE_X  # [linux and x86_64 and microarch_level == 4]
+    # - BLASFEO_TARGET=X64_INTEL_SKYLAKE_X  # [linux and x86_64 and microarch_level == 4]
     # Modern arm processors (e.g. X Elite) have cache sizes more similar to the
     # M1 from Apple, thus we set TARGET to ARMV8A_APPLE_M1
     - BLASFEO_TARGET=ARMV8A_APPLE_M1  # [arm64]
