@@ -7,8 +7,10 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
-    sha256: a948e2cab85d0280653d29c709fd7f44ba0829fb09327c29c28d070492230386
+  url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
+  sha256: a948e2cab85d0280653d29c709fd7f44ba0829fb09327c29c28d070492230386
+  patches:
+    - patches/fix-armv8a-source-files.patch
 
 build:
   number: {{ build }}  # [not x86_64]
