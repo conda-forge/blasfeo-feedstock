@@ -9,13 +9,8 @@ package:
 source:
   - url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
     sha256: a948e2cab85d0280653d29c709fd7f44ba0829fb09327c29c28d070492230386
-    patches:
-      - skip_blas_tests.patch
 
 build:
-  # windows and macos are supported on the master branch, as soon as a new version is released
-  # they can be packaged (see https://github.com/giaf/blasfeo/issues/181)
-  skip: true  # [win or osx]
   number: {{ build }}  # [not (linux and x86_64)]
   number: {{ build + 100 }}  # [linux and x86_64 and microarch_level == 1]
   number: {{ build + 300 }}  # [linux and x86_64 and microarch_level == 3]
@@ -26,13 +21,10 @@ build:
     # X64_INTEL_CORE is the TARGET setting more similar to nocona, so we used that for
     # no microarch_level and microarch_level == 1
     # microarch_level == 3 has AVX and AVX2, so it is basically TARGET X64_INTEL_HASWELL
-    # Commented as a workaround for https://github.com/conda-forge/blasfeo-feedstock/pull/9,
-    # we can re-enable optimized code once new release of blasfeo is released
-    #- BLASFEO_TARGET=GENERIC  # [not x86_64]
-    #- BLASFEO_TARGET=X64_INTEL_CORE  # [(not linux) and x86_64]
-    #- BLASFEO_TARGET=X64_INTEL_CORE  # [linux and x86_64 and microarch_level == 1]
-    #- BLASFEO_TARGET=X64_INTEL_HASWELL  # [linux and x86_64 and microarch_level == 3]
-    - BLASFEO_TARGET=GENERIC
+    - BLASFEO_TARGET=GENERIC  # [not x86_64]
+    - BLASFEO_TARGET=X64_INTEL_CORE  # [(not linux) and x86_64]
+    - BLASFEO_TARGET=X64_INTEL_CORE  # [linux and x86_64 and microarch_level == 1]
+    - BLASFEO_TARGET=X64_INTEL_HASWELL  # [linux and x86_64 and microarch_level == 3]
 
 requirements:
   build:
