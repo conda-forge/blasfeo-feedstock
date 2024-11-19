@@ -8,8 +8,14 @@ jobs:
     vmImage: macOS-13
   strategy:
     matrix:
-      osx_64_:
-        CONFIG: osx_64_
+      osx_64_microarch_level1:
+        CONFIG: osx_64_microarch_level1
+        UPLOAD_PACKAGES: 'True'
+      osx_64_microarch_level3:
+        CONFIG: osx_64_microarch_level3
+        UPLOAD_PACKAGES: 'True'
+      osx_64_microarch_level4:
+        CONFIG: osx_64_microarch_level4
         UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
   variables: {}
