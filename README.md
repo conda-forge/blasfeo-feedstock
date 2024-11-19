@@ -54,6 +54,41 @@ Current build status
                   <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blasfeo-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_ppc64le_" alt="variant">
                 </a>
               </td>
+            </tr><tr>
+              <td>osx_64_microarch_level1</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=23103&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blasfeo-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_microarch_level1" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_64_microarch_level3</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=23103&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blasfeo-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_microarch_level3" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_arm64</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=23103&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blasfeo-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>win_64_microarch_level1</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=23103&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blasfeo-feedstock?branchName=main&jobName=win&configuration=win%20win_64_microarch_level1" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>win_64_microarch_level3</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=23103&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blasfeo-feedstock?branchName=main&jobName=win&configuration=win%20win_64_microarch_level3" alt="variant">
+                </a>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -183,5 +218,6 @@ In order to produce a uniquely identifiable distribution:
 Feedstock Maintainers
 =====================
 
+* [@RSchwan](https://github.com/RSchwan/)
 * [@traversaro](https://github.com/traversaro/)
 

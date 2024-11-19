@@ -1,47 +1,57 @@
 {% set name = "libblasfeo" %}
-{% set version = "0.1.3" %}
-{% set build = 3 %}
+{% set version = "0.1.4" %}
+{% set build = 0 %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
-    sha256: c33eb6467a90d6075a8db34e5ab239ecdda38c5261ae096def122fe7a0f98780
-    patches:
-      - skip_blas_tests.patch
+  url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
+  sha256: a948e2cab85d0280653d29c709fd7f44ba0829fb09327c29c28d070492230386
+  patches:
+    - patches/fix-armv8a-source-files.patch
 
 build:
-  # windows and macos are supported on the master branch, as soon as a new version is released
-  # they can be packaged (see https://github.com/giaf/blasfeo/issues/181)
-  skip: True  # [win or osx]
-  number: {{ build }}          # [not (linux and x86_64)]
-  number: {{ build + 100 }}    # [linux and x86_64 and microarch_level == 1]
-  number: {{ build + 300 }}    # [linux and x86_64 and microarch_level == 3]
+  number: {{ build }}  # [not x86_64]
+  number: {{ build + 100 }}  # [x86_64 and microarch_level == 1]
+  number: {{ build + 300 }}  # [x86_64 and microarch_level == 3]
+  number: {{ build + 400 }}  # [x86_64 and microarch_level == 4]
   run_exports:
     - {{ pin_subpackage(name, max_pin='x.x.x') }}
   script_env:
     # See https://github.com/giaf/blasfeo?tab=readme-ov-file#supported-computer-architectures
-    # X64_INTEL_CORE is the TARGET setting more similar to nocona, so we used that for
-    # no microarch_level and microarch_level == 1
+    # and https://clang.llvm.org/docs/UsersManual.html#x86
+    # X64_INTEL_CORE is the TARGET setting more similar to nocona,
+    # so we used that for no microarch_level and microarch_level == 1
     # microarch_level == 3 has AVX and AVX2, so it is basically TARGET X64_INTEL_HASWELL
-    # Commented as a workaround for https://github.com/conda-forge/blasfeo-feedstock/pull/9,
-    # we can re-enable optimized code once new release of blasfeo is released
-    #- BLASFEO_TARGET=GENERIC  # [not x86_64]
-    #- BLASFEO_TARGET=X64_INTEL_CORE  # [(not linux) and x86_64]
-    #- BLASFEO_TARGET=X64_INTEL_CORE  # [linux and x86_64 and microarch_level == 1]
-    #- BLASFEO_TARGET=X64_INTEL_HASWELL  # [linux and x86_64 and microarch_level == 3]
-    - BLASFEO_TARGET=GENERIC
+    # microarch_level == 4 has AVX512F, so it is basically TARGET X64_INTEL_SKYLAKE_X
+    - BLASFEO_TARGET=GENERIC  # [not (x86_64 or aarch64 or arm64)]
+    - BLASFEO_TARGET=X64_INTEL_CORE  # [x86_64 and microarch_level == 1]
+    - BLASFEO_TARGET=X64_INTEL_HASWELL  # [x86_64 and microarch_level == 3]
+    # - BLASFEO_TARGET=X64_INTEL_SKYLAKE_X  # [linux and x86_64 and microarch_level == 4]
+    # Modern arm processors (e.g. X Elite) have cache sizes more similar to the
+    # M1 from Apple, thus we set TARGET to ARMV8A_APPLE_M1
+    - BLASFEO_TARGET=ARMV8A_APPLE_M1  # [arm64]
+    # On linux the main targets are mostly embedded systems like
+    # Raspberry Pis, hence we target the  CORTEX A76.
+    - BLASFEO_TARGET=ARMV8A_ARM_CORTEX_A76  # [aarch64]
 
 requirements:
   build:
-    - x86_64-microarch-level {{ microarch_level }}  # [linux and x86_64]
+    # Note that x86_64-microarch-level doesn't support win,
+    # but we can still specify microarch_level for win builds.
+    # This package only sets the -march flags, but since the build process
+    # is custom anyway, we don't care on win. 
+    - x86_64-microarch-level {{ microarch_level }}  # [unix and x86_64]
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
     - cmake
     - pkg-config
     - ninja
+    - clang  # [win]
+  run:
+    - _x86_64-microarch-level >={{ microarch_level }}  # [x86_64]
 
 test:
   commands:
