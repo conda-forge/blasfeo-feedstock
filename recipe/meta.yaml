@@ -1,5 +1,5 @@
 {% set name = "libblasfeo" %}
-{% set version = "0.1.4" %}
+{% set version = "0.1.4.1" %}
 {% set build = 0 %}
 
 package:
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
-  sha256: a948e2cab85d0280653d29c709fd7f44ba0829fb09327c29c28d070492230386
+  sha256: b6b5070c6ecf4b5692e3dc3e212f6040a4dbcd9b6b5867c8fbf02b5d2cf13427
   patches:
     - patches/fix-armv8a-source-files.patch
 
