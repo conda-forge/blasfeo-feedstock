@@ -1,6 +1,6 @@
 {% set name = "libblasfeo" %}
-{% set version = "0.1.4.1" %}
-{% set build = 1 %}
+{% set version = "0.1.4.2" %}
+{% set build = 0 %}
 
 package:
   name: {{ name }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/giaf/blasfeo/archive/refs/tags/{{ version }}.tar.gz
-  sha256: b6b5070c6ecf4b5692e3dc3e212f6040a4dbcd9b6b5867c8fbf02b5d2cf13427
+  sha256: df990206225095fb97ca1b1a3ebfe34cbc2cea7a8b2643ed3a6deb28a1848aa2
 
 build:
   number: {{ build }}  # [not x86_64]
