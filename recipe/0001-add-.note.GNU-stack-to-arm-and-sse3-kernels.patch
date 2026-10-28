@@ -1,0 +1,271 @@
+From 9de0ca3bfaceabf0d224b7b17621c8114be595d1 Mon Sep 17 00:00:00 2001
+From: Joris Gillis <joris.gillis42@gmail.com>
+Date: Fri, 9 Oct 2026 19:43:36 +0200
+Subject: [PATCH] add .note.GNU-stack to arm and sse3 kernels
+
+As the other x86 kernels already do (e.g. kernel/sse3/kernel_dgemm_4x4_lib4.S).
+Without it the linker marks libblasfeo as requiring an executable stack;
+glibc >= 2.41 then refuses to dlopen it.
+---
+ kernel/armv7a/kernel_dgemm_4x4_lib4.S  | 4 ++++
+ kernel/armv7a/kernel_sgemm_12x4_lib4.S | 4 ++++
+ kernel/armv7a/kernel_sgemm_4x4_lib4.S  | 4 ++++
+ kernel/armv7a/kernel_sgemm_8x4_lib4.S  | 4 ++++
+ kernel/armv8a/kernel_d_aux_lib.S       | 4 ++++
+ kernel/armv8a/kernel_dgemm_12x4_lib4.S | 4 ++++
+ kernel/armv8a/kernel_dgemm_4x4_lib4.S  | 4 ++++
+ kernel/armv8a/kernel_dgemm_8x4_lib4.S  | 4 ++++
+ kernel/armv8a/kernel_dgemv_4_lib4.S    | 4 ++++
+ kernel/armv8a/kernel_dger_lib4.S       | 4 ++++
+ kernel/armv8a/kernel_dgetr_lib.S       | 4 ++++
+ kernel/armv8a/kernel_dpack_lib4.S      | 4 ++++
+ kernel/armv8a/kernel_sgemm_12x4_lib4.S | 4 ++++
+ kernel/armv8a/kernel_sgemm_16x4_lib4.S | 4 ++++
+ kernel/armv8a/kernel_sgemm_4x4_lib4.S  | 4 ++++
+ kernel/armv8a/kernel_sgemm_8x4_lib4.S  | 4 ++++
+ kernel/armv8a/kernel_sgemm_8x8_lib4.S  | 4 ++++
+ kernel/armv8a/kernel_sgemv_4_lib4.S    | 4 ++++
+ kernel/armv8a/kernel_spack_lib4.S      | 4 ++++
+ kernel/sse3/kernel_dgemv_4_lib4.S      | 4 ++++
+ 20 files changed, 80 insertions(+)
+
+diff --git a/kernel/armv7a/kernel_dgemm_4x4_lib4.S b/kernel/armv7a/kernel_dgemm_4x4_lib4.S
+index 38e8a336..29675c4b 100644
+--- a/kernel/armv7a/kernel_dgemm_4x4_lib4.S
++++ b/kernel/armv7a/kernel_dgemm_4x4_lib4.S
+@@ -2812,3 +2812,7 @@ _kernel_dsyrk_dpotrf_nt_l_4x4_lib4:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv7a/kernel_sgemm_12x4_lib4.S b/kernel/armv7a/kernel_sgemm_12x4_lib4.S
+index ccf59564..77fa7841 100644
+--- a/kernel/armv7a/kernel_sgemm_12x4_lib4.S
++++ b/kernel/armv7a/kernel_sgemm_12x4_lib4.S
+@@ -1382,3 +1382,7 @@ _kernel_spotrf_nt_l_12x4_lib4:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv7a/kernel_sgemm_4x4_lib4.S b/kernel/armv7a/kernel_sgemm_4x4_lib4.S
+index 7b772b23..29677b9a 100644
+--- a/kernel/armv7a/kernel_sgemm_4x4_lib4.S
++++ b/kernel/armv7a/kernel_sgemm_4x4_lib4.S
+@@ -1671,3 +1671,7 @@ _kernel_spotrf_nt_l_4x4_lib4:
+ #include "kernel_sgemm_4x4_lib.S"
+ 
+ #endif
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv7a/kernel_sgemm_8x4_lib4.S b/kernel/armv7a/kernel_sgemm_8x4_lib4.S
+index ee13c2af..55eb90ff 100644
+--- a/kernel/armv7a/kernel_sgemm_8x4_lib4.S
++++ b/kernel/armv7a/kernel_sgemm_8x4_lib4.S
+@@ -1931,3 +1931,7 @@ _kernel_spotrf_nt_l_8x4_lib4:
+ #include "kernel_sgemm_8x4_lib.S"
+ 
+ #endif
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_d_aux_lib.S b/kernel/armv8a/kernel_d_aux_lib.S
+index 6c7ed93f..45faf2e8 100644
+--- a/kernel/armv8a/kernel_d_aux_lib.S
++++ b/kernel/armv8a/kernel_d_aux_lib.S
+@@ -344,3 +344,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_dgemm_12x4_lib4.S b/kernel/armv8a/kernel_dgemm_12x4_lib4.S
+index 72c4f01f..4ec615b9 100644
+--- a/kernel/armv8a/kernel_dgemm_12x4_lib4.S
++++ b/kernel/armv8a/kernel_dgemm_12x4_lib4.S
+@@ -5680,3 +5680,7 @@ _ ## NAME:
+ 
+ #endif
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_dgemm_4x4_lib4.S b/kernel/armv8a/kernel_dgemm_4x4_lib4.S
+index c80d8bd4..8a99d97f 100644
+--- a/kernel/armv8a/kernel_dgemm_4x4_lib4.S
++++ b/kernel/armv8a/kernel_dgemm_4x4_lib4.S
+@@ -4960,3 +4960,7 @@ _ ## NAME:
+ 
+ #endif
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_dgemm_8x4_lib4.S b/kernel/armv8a/kernel_dgemm_8x4_lib4.S
+index e9f6345a..16ce34b7 100644
+--- a/kernel/armv8a/kernel_dgemm_8x4_lib4.S
++++ b/kernel/armv8a/kernel_dgemm_8x4_lib4.S
+@@ -6963,3 +6963,7 @@ _ ## NAME:
+ 
+ #endif
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_dgemv_4_lib4.S b/kernel/armv8a/kernel_dgemv_4_lib4.S
+index ac07f298..97b8e978 100644
+--- a/kernel/armv8a/kernel_dgemv_4_lib4.S
++++ b/kernel/armv8a/kernel_dgemv_4_lib4.S
+@@ -1333,3 +1333,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_dger_lib4.S b/kernel/armv8a/kernel_dger_lib4.S
+index 63990729..776d54e5 100644
+--- a/kernel/armv8a/kernel_dger_lib4.S
++++ b/kernel/armv8a/kernel_dger_lib4.S
+@@ -156,3 +156,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_dgetr_lib.S b/kernel/armv8a/kernel_dgetr_lib.S
+index e9ee1a31..f2c93626 100644
+--- a/kernel/armv8a/kernel_dgetr_lib.S
++++ b/kernel/armv8a/kernel_dgetr_lib.S
+@@ -736,3 +736,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_dpack_lib4.S b/kernel/armv8a/kernel_dpack_lib4.S
+index 59c29fdf..cbd4b091 100644
+--- a/kernel/armv8a/kernel_dpack_lib4.S
++++ b/kernel/armv8a/kernel_dpack_lib4.S
+@@ -1276,3 +1276,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_sgemm_12x4_lib4.S b/kernel/armv8a/kernel_sgemm_12x4_lib4.S
+index ddbacecd..61dba300 100644
+--- a/kernel/armv8a/kernel_sgemm_12x4_lib4.S
++++ b/kernel/armv8a/kernel_sgemm_12x4_lib4.S
+@@ -2235,3 +2235,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_sgemm_16x4_lib4.S b/kernel/armv8a/kernel_sgemm_16x4_lib4.S
+index 9dcd3d34..8f95b8c5 100644
+--- a/kernel/armv8a/kernel_sgemm_16x4_lib4.S
++++ b/kernel/armv8a/kernel_sgemm_16x4_lib4.S
+@@ -2494,3 +2494,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_sgemm_4x4_lib4.S b/kernel/armv8a/kernel_sgemm_4x4_lib4.S
+index d17ef1fc..8e9d8be6 100644
+--- a/kernel/armv8a/kernel_sgemm_4x4_lib4.S
++++ b/kernel/armv8a/kernel_sgemm_4x4_lib4.S
+@@ -2157,3 +2157,7 @@ _ ## NAME:
+ 
+ #endif
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_sgemm_8x4_lib4.S b/kernel/armv8a/kernel_sgemm_8x4_lib4.S
+index 4c071fec..bd17f98a 100644
+--- a/kernel/armv8a/kernel_sgemm_8x4_lib4.S
++++ b/kernel/armv8a/kernel_sgemm_8x4_lib4.S
+@@ -2740,3 +2740,7 @@ _ ## NAME:
+ 
+ #endif
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_sgemm_8x8_lib4.S b/kernel/armv8a/kernel_sgemm_8x8_lib4.S
+index c5a6f9f7..c264c493 100644
+--- a/kernel/armv8a/kernel_sgemm_8x8_lib4.S
++++ b/kernel/armv8a/kernel_sgemm_8x8_lib4.S
+@@ -1975,3 +1975,7 @@ _ ## NAME:
+ 
+ #endif
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_sgemv_4_lib4.S b/kernel/armv8a/kernel_sgemv_4_lib4.S
+index b7869852..93e4c50a 100644
+--- a/kernel/armv8a/kernel_sgemv_4_lib4.S
++++ b/kernel/armv8a/kernel_sgemv_4_lib4.S
+@@ -1267,3 +1267,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/armv8a/kernel_spack_lib4.S b/kernel/armv8a/kernel_spack_lib4.S
+index 1ffe7890..2dd26ac2 100644
+--- a/kernel/armv8a/kernel_spack_lib4.S
++++ b/kernel/armv8a/kernel_spack_lib4.S
+@@ -520,3 +520,7 @@ _ ## NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",%progbits
++#endif
+diff --git a/kernel/sse3/kernel_dgemv_4_lib4.S b/kernel/sse3/kernel_dgemv_4_lib4.S
+index 8be61da0..4002e7d9 100644
+--- a/kernel/sse3/kernel_dgemv_4_lib4.S
++++ b/kernel/sse3/kernel_dgemv_4_lib4.S
+@@ -1768,3 +1768,7 @@ NAME:
+ 
+ 
+ 
++
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",@progbits
++#endif
