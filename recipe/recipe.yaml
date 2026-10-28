@@ -97,6 +97,13 @@ tests:
   - script:
       - if: linux
         then: nm -s $PREFIX/lib/libblasfeo.so | grep "U "
+      # Require a non-executable stack independently of the system glibc version.
+      - if: linux
+        then: readelf --wide --program-headers "$PREFIX/lib/libblasfeo.so" | grep -E 'GNU_STACK.* RW[[:space:]]'
+    requirements:
+      run:
+        - if: linux
+          then: binutils
 
 about:
   homepage: https://github.com/giaf/blasfeo
