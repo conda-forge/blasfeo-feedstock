@@ -1,0 +1,24 @@
+From 10fe20f888acef979a2b84f97cce646c748434a1 Mon Sep 17 00:00:00 2001
+From: giaf <gianfri2008@hotmail.it>
+Date: Mon, 28 Sep 2026 10:43:08 +0200
+Subject: [PATCH] fix missing symbol (SSE3 stack annotation only)
+
+Backport only the SSE3 assembly change from upstream commit
+10fe20f888acef979a2b84f97cce646c748434a1. Omit the unrelated
+generic C kernel change.
+
+---
+diff --git a/kernel/sse3/kernel_sgemm_4x4_lib4.S b/kernel/sse3/kernel_sgemm_4x4_lib4.S
+index c873c18a..8f937eef 100644
+--- a/kernel/sse3/kernel_sgemm_4x4_lib4.S
++++ b/kernel/sse3/kernel_sgemm_4x4_lib4.S
+@@ -1252,4 +1252,9 @@ NAME:
+ 
+ 
+ 
++#if defined(OS_LINUX)
++	.section	.note.GNU-stack,"",@progbits
++#elif defined(OS_MAC)
++	.subsections_via_symbols
++#endif
+ 

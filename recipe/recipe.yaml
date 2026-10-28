@@ -3,7 +3,7 @@ schema_version: 1
 context:
   name: libblasfeo
   version: "0.1.4.3"
-  build: 1
+  build: 2
 
 package:
   name: ${{ name }}
@@ -15,6 +15,8 @@ source:
   patches:
     - win-clang-prefetch-cast.patch
     - fix_version_to_0_1_4_3.patch
+    - 0001-add-.note.GNU-stack-to-arm-and-sse3-kernels.patch
+    - 0002-fix-sse3-sgemm-stack-annotation.patch
 
 build:
   number: >-
@@ -95,6 +97,13 @@ tests:
   - script:
       - if: linux
         then: nm -s $PREFIX/lib/libblasfeo.so | grep "U "
+      # Require a non-executable stack independently of the system glibc version.
+      - if: linux
+        then: readelf --wide --program-headers "$PREFIX/lib/libblasfeo.so" | grep -E 'GNU_STACK.* RW[[:space:]]'
+    requirements:
+      run:
+        - if: linux
+          then: binutils
 
 about:
   homepage: https://github.com/giaf/blasfeo
