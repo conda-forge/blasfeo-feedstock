@@ -3,10 +3,15 @@ schema_version: 1
 context:
   name: libblasfeo
   version: "0.1.4.3"
-  build: 2
+  build: 3
+  # x86-64 microarch level, which selects the BLASFEO target and thus its
+  # matrix layout, or 0 on platforms without microarch variants.
+  # See recipe/README.md and
+  # https://github.com/conda-forge/blasfeo-feedstock/issues/25
+  abi_level: ${{ (microarch_level | default(1)) if x86_64 else 0 }}
 
-package:
-  name: ${{ name }}
+recipe:
+  name: blasfeo-split
   version: ${{ version }}
 
 source:
@@ -17,6 +22,7 @@ source:
     - fix_version_to_0_1_4_3.patch
     - 0001-add-.note.GNU-stack-to-arm-and-sse3-kernels.patch
     - 0002-fix-sse3-sgemm-stack-annotation.patch
+    - 0003-cmake-link-libm.patch
 
 build:
   number: >-
@@ -54,56 +60,82 @@ build:
           else "GENERIC"
         }}
 
-requirements:
-  build:
-    # Note that x86_64-microarch-level doesn't support win,
-    # but we can still specify microarch_level for win builds.
-    # This package only sets the -march flags, but since the build process
-    # is custom anyway, we don't care on win.
-    - if: unix and x86_64
-      then: x86_64-microarch-level ==${{ microarch_level | default("1") }}
+outputs:
+- package:
+    name: ${{ name }}
+  requirements:
+    build:
+      # Note that x86_64-microarch-level doesn't support win,
+      # but we can still specify microarch_level for win builds.
+      # This package only sets the -march flags, but since the build process
+      # is custom anyway, we don't care on win.
+      - if: unix and x86_64
+        then: x86_64-microarch-level ==${{ microarch_level | default("1") }}
 
-    - ${{ compiler("c") }}
-    - ${{ stdlib("c") }}
-    - cmake
-    - pkg-config
-    - ninja
+      - ${{ compiler("c") }}
+      - ${{ stdlib("c") }}
+      - cmake
+      - pkg-config
+      - ninja
 
-    - if: win
-      then: clang
+      - if: win
+        then: clang
 
-  run:
-    - if: x86_64
-      then: _x86_64-microarch-level >=${{ microarch_level | default("1") }}
+    run:
+      - if: x86_64
+        then: _x86_64-microarch-level >=${{ microarch_level | default("1") }}
 
-  run_exports:
-    - ${{ pin_subpackage(name, upper_bound="x.x.x") }}
+    run_exports:
+      - ${{ pin_subpackage(name, upper_bound="x.x.x") }}
 
-tests:
-  - package_contents:
-      include:
-        - blasfeo.h
-      lib:
-        - blasfeo
+    # Consumers that opt into libblasfeo-microarch-abi must get this variant.
+    run_constraints:
+      - libblasfeo-microarch-abi ==${{ version }}.${{ abi_level }}
 
-  - script:
-      - cmake-package-check blasfeo --targets blasfeo
-    requirements:
-      run:
-        - cmake-package-check
-        - ${{ compiler('c') }}
-        - ${{ compiler('cxx') }}
+  tests:
+    - package_contents:
+        include:
+          - blasfeo.h
+        lib:
+          - blasfeo
 
-  - script:
-      - if: linux
-        then: nm -s $PREFIX/lib/libblasfeo.so | grep "U "
-      # Require a non-executable stack independently of the system glibc version.
-      - if: linux
-        then: readelf --wide --program-headers "$PREFIX/lib/libblasfeo.so" | grep -E 'GNU_STACK.* RW[[:space:]]'
-    requirements:
-      run:
+    - script:
+        - cmake-package-check blasfeo --targets blasfeo
+      requirements:
+        run:
+          - cmake-package-check
+          - ${{ compiler('c') }}
+          - ${{ compiler('cxx') }}
+
+    - script:
         - if: linux
-          then: binutils
+          then: nm -s $PREFIX/lib/libblasfeo.so | grep "U "
+        # Require a non-executable stack independently of the system glibc version.
+        - if: linux
+          then: readelf --wide --program-headers "$PREFIX/lib/libblasfeo.so" | grep -E 'GNU_STACK.* RW[[:space:]]'
+        # libblasfeo uses libm functions, so it must declare libm as needed
+        # to be loadable by dlopen without a preloaded libm.
+        - if: linux
+          then: readelf --dynamic "$PREFIX/lib/libblasfeo.so" | grep -E 'NEEDED.*\[libm\.so'
+      requirements:
+        run:
+          - if: linux
+            then: binutils
+
+# Opt-in marker for consumers whose ABI depends on the BLASFEO matrix layout,
+# see recipe/README.md.
+- package:
+    name: libblasfeo-microarch-abi
+    version: ${{ version }}.${{ abi_level }}
+  build:
+    # Empty marker package, so do not run the top-level build script.
+    script: []
+  requirements:
+    run_exports:
+      - libblasfeo-microarch-abi ==${{ version }}.${{ abi_level }}
+  tests:
+    - script:
+        - echo "This is a metapackage, no test is necessary."
 
 about:
   homepage: https://github.com/giaf/blasfeo

@@ -70,6 +70,7 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-libblasfeo-green.svg)](https://anaconda.org/conda-forge/libblasfeo) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libblasfeo.svg)](https://anaconda.org/conda-forge/libblasfeo) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libblasfeo.svg)](https://anaconda.org/conda-forge/libblasfeo) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libblasfeo.svg)](https://anaconda.org/conda-forge/libblasfeo) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-libblasfeo--microarch--abi-green.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libblasfeo-microarch-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libblasfeo-microarch-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libblasfeo-microarch-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) |
 
 Installing blasfeo
 ==================
@@ -88,7 +89,7 @@ How to use
 <summary>With conda</summary>
 
 ```
-conda install libblasfeo
+conda install libblasfeo libblasfeo-microarch-abi
 ```
 
 </details>
@@ -97,7 +98,7 @@ conda install libblasfeo
 <summary>With mamba</summary>
 
 ```
-mamba install libblasfeo
+mamba install libblasfeo libblasfeo-microarch-abi
 ```
 
 </details>
@@ -107,9 +108,9 @@ mamba install libblasfeo
 
 ```
 # for adding to your local project
-pixi add libblasfeo
+pixi add libblasfeo libblasfeo-microarch-abi
 # for installing globally
-pixi global install libblasfeo
+pixi global install libblasfeo libblasfeo-microarch-abi
 ```
 
 </details>
