@@ -32,6 +32,9 @@ source:
     - 0002-fix-sse3-sgemm-stack-annotation.patch
     - 0003-cmake-link-libm.patch
 
+build:
+  number: ${{ build }}
+
 outputs:
 - package:
     name: libblasfeo-abi
