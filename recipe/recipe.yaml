@@ -3,10 +3,23 @@ schema_version: 1
 context:
   name: libblasfeo
   version: "0.1.4.3"
-  build: 2
+  build: 3
+  # Identifies the packed-matrix ABI (panel sizes and exported symbols), which
+  # depends on the BLASFEO target. Consumers compiled against one target must
+  # run with the same one, see
+  # https://github.com/conda-forge/blasfeo-feedstock/issues/25
+  abi: >-
+    ${{
+      "x64_intel_core" if x86_64 and (microarch_level | default(1)) in [1, "1"]
+      else "x64_intel_haswell" if x86_64 and (microarch_level | default(1)) in [3, "3"]
+      else "x64_intel_skylake_x" if x86_64 and (microarch_level | default(1)) in [4, "4"]
+      else "armv8a_apple_m1" if arm64
+      else "armv8a_arm_cortex_a76" if aarch64
+      else "generic"
+    }}
 
-package:
-  name: ${{ name }}
+recipe:
+  name: blasfeo-split
   version: ${{ version }}
 
 source:
@@ -17,93 +30,113 @@ source:
     - fix_version_to_0_1_4_3.patch
     - 0001-add-.note.GNU-stack-to-arm-and-sse3-kernels.patch
     - 0002-fix-sse3-sgemm-stack-annotation.patch
+    - 0003-cmake-link-libm.patch
 
-build:
-  number: >-
-    ${{ build + (
-        100 if (microarch_level | default(1)) in [1, "1"]
-        else 300 if (microarch_level | default(1)) in [3, "3"]
-        else 400 if (microarch_level | default(1)) in [4, "4"]
-        else 0
-        if x86_64 else 0
-    ) }}
-
-  # Selects build.sh on Unix and build.bat on Windows.
-  script:
-    file: build
-    env:
-      # See https://github.com/giaf/blasfeo?tab=readme-ov-file#supported-computer-architectures
-      # and https://clang.llvm.org/docs/UsersManual.html#x86.
-      #
-      # X64_INTEL_CORE is the TARGET setting more similar to nocona,
-      # so we use that for microarch_level == 1.
-      # microarch_level == 3 has AVX and AVX2, so it maps to X64_INTEL_HASWELL.
-      # microarch_level == 4 has AVX512F, so it maps to X64_INTEL_SKYLAKE_X.
-      #
-      # Modern arm processors (e.g. X Elite) have cache sizes more similar
-      # to Apple's M1, so arm64 uses ARMV8A_APPLE_M1.
-      # On Linux aarch64, typical targets are embedded systems like
-      # Raspberry Pi, so we use ARMV8A_ARM_CORTEX_A76.
-      BLASFEO_TARGET: >-
-        ${{
-          "X64_INTEL_CORE" if x86_64 and (microarch_level | default(1)) in [1, "1"]
-          else "X64_INTEL_HASWELL" if x86_64 and (microarch_level | default(1)) in [3, "3"]
-          else "X64_INTEL_SKYLAKE_X" if x86_64 and (microarch_level | default(1)) in [4, "4"]
-          else "ARMV8A_APPLE_M1" if arm64
-          else "ARMV8A_ARM_CORTEX_A76" if aarch64
-          else "GENERIC"
-        }}
-
-requirements:
+outputs:
+- package:
+    name: libblasfeo-abi
   build:
-    # Note that x86_64-microarch-level doesn't support win,
-    # but we can still specify microarch_level for win builds.
-    # This package only sets the -march flags, but since the build process
-    # is custom anyway, we don't care on win.
-    - if: unix and x86_64
-      then: x86_64-microarch-level ==${{ microarch_level | default("1") }}
+    number: ${{ build }}
+    # The build number keeps file names unique across rebuilds.
+    string: ${{ abi }}_${{ build }}
+  tests:
+    - script:
+        - echo "BLASFEO ABI ${{ abi }}"
 
-    - ${{ compiler("c") }}
-    - ${{ stdlib("c") }}
-    - cmake
-    - pkg-config
-    - ninja
+- package:
+    name: ${{ name }}
+  build:
+    number: >-
+      ${{ build + (
+          100 if (microarch_level | default(1)) in [1, "1"]
+          else 300 if (microarch_level | default(1)) in [3, "3"]
+          else 400 if (microarch_level | default(1)) in [4, "4"]
+          else 0
+          if x86_64 else 0
+      ) }}
 
-    - if: win
-      then: clang
+    # Selects build.sh on Unix and build.bat on Windows.
+    script:
+      file: build
+      env:
+        # See https://github.com/giaf/blasfeo?tab=readme-ov-file#supported-computer-architectures
+        # and https://clang.llvm.org/docs/UsersManual.html#x86.
+        #
+        # X64_INTEL_CORE is the TARGET setting more similar to nocona,
+        # so we use that for microarch_level == 1.
+        # microarch_level == 3 has AVX and AVX2, so it maps to X64_INTEL_HASWELL.
+        # microarch_level == 4 has AVX512F, so it maps to X64_INTEL_SKYLAKE_X.
+        #
+        # Modern arm processors (e.g. X Elite) have cache sizes more similar
+        # to Apple's M1, so arm64 uses ARMV8A_APPLE_M1.
+        # On Linux aarch64, typical targets are embedded systems like
+        # Raspberry Pi, so we use ARMV8A_ARM_CORTEX_A76.
+        BLASFEO_TARGET: >-
+          ${{
+            "X64_INTEL_CORE" if x86_64 and (microarch_level | default(1)) in [1, "1"]
+            else "X64_INTEL_HASWELL" if x86_64 and (microarch_level | default(1)) in [3, "3"]
+            else "X64_INTEL_SKYLAKE_X" if x86_64 and (microarch_level | default(1)) in [4, "4"]
+            else "ARMV8A_APPLE_M1" if arm64
+            else "ARMV8A_ARM_CORTEX_A76" if aarch64
+            else "GENERIC"
+          }}
 
-  run:
-    - if: x86_64
-      then: _x86_64-microarch-level >=${{ microarch_level | default("1") }}
+  requirements:
+    build:
+      # Note that x86_64-microarch-level doesn't support win,
+      # but we can still specify microarch_level for win builds.
+      # This package only sets the -march flags, but since the build process
+      # is custom anyway, we don't care on win.
+      - if: unix and x86_64
+        then: x86_64-microarch-level ==${{ microarch_level | default("1") }}
 
-  run_exports:
-    - ${{ pin_subpackage(name, upper_bound="x.x.x") }}
+      - ${{ compiler("c") }}
+      - ${{ stdlib("c") }}
+      - cmake
+      - pkg-config
+      - ninja
 
-tests:
-  - package_contents:
-      include:
-        - blasfeo.h
-      lib:
-        - blasfeo
+      - if: win
+        then: clang
 
-  - script:
-      - cmake-package-check blasfeo --targets blasfeo
-    requirements:
-      run:
-        - cmake-package-check
-        - ${{ compiler('c') }}
-        - ${{ compiler('cxx') }}
+    run:
+      - ${{ pin_subpackage("libblasfeo-abi", exact=True) }}
+      - if: x86_64
+        then: _x86_64-microarch-level >=${{ microarch_level | default("1") }}
 
-  - script:
-      - if: linux
-        then: nm -s $PREFIX/lib/libblasfeo.so | grep "U "
-      # Require a non-executable stack independently of the system glibc version.
-      - if: linux
-        then: readelf --wide --program-headers "$PREFIX/lib/libblasfeo.so" | grep -E 'GNU_STACK.* RW[[:space:]]'
-    requirements:
-      run:
+    run_exports:
+      - ${{ pin_subpackage(name, upper_bound="x.x.x") }}
+      - libblasfeo-abi * ${{ abi }}_*
+
+  tests:
+    - package_contents:
+        include:
+          - blasfeo.h
+        lib:
+          - blasfeo
+
+    - script:
+        - cmake-package-check blasfeo --targets blasfeo
+      requirements:
+        run:
+          - cmake-package-check
+          - ${{ compiler('c') }}
+          - ${{ compiler('cxx') }}
+
+    - script:
         - if: linux
-          then: binutils
+          then: nm -s $PREFIX/lib/libblasfeo.so | grep "U "
+        # Require a non-executable stack independently of the system glibc version.
+        - if: linux
+          then: readelf --wide --program-headers "$PREFIX/lib/libblasfeo.so" | grep -E 'GNU_STACK.* RW[[:space:]]'
+        # libblasfeo uses libm functions, so it must declare libm as needed
+        # to be loadable by dlopen without a preloaded libm.
+        - if: linux
+          then: readelf --dynamic "$PREFIX/lib/libblasfeo.so" | grep -E 'NEEDED.*\[libm\.so'
+      requirements:
+        run:
+          - if: linux
+            then: binutils
 
 about:
   homepage: https://github.com/giaf/blasfeo

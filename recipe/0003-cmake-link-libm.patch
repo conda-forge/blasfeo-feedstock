@@ -1,0 +1,23 @@
+Subject: [PATCH] cmake: link libm on Linux
+
+The Makefile build links libblasfeo.so with -lm, but the CMake build did
+not, so the shared library had unresolved libm symbols (e.g. fminf) without
+a DT_NEEDED entry and could not be loaded with dlopen(RTLD_NOW) unless libm
+was already loaded.
+
+---
+--- a/CMakeLists.txt	2026-11-27 22:54:44
++++ b/CMakeLists.txt	2026-11-27 22:54:44
+@@ -1417,6 +1417,12 @@
+     VERSION ${BLASFEO_VERSION}
+     SOVERSION ${BLASFEO_SOVERSION}
+ )
++
++# BLASFEO uses math functions (e.g. fminf, sqrt), which live in a separate
++# libm on Linux; the Makefile build already links it with -lm.
++if(UNIX AND NOT APPLE)
++	target_link_libraries(blasfeo PRIVATE m)
++endif()
+ 
+ # 1) *XILINX_NONE_ELF*:
+ #		Xilinx standalone (any core, e.g. A53,R5,..; *untested*)
