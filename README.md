@@ -70,7 +70,7 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-libblasfeo-green.svg)](https://anaconda.org/conda-forge/libblasfeo) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libblasfeo.svg)](https://anaconda.org/conda-forge/libblasfeo) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libblasfeo.svg)](https://anaconda.org/conda-forge/libblasfeo) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libblasfeo.svg)](https://anaconda.org/conda-forge/libblasfeo) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-libblasfeo--abi-green.svg)](https://anaconda.org/conda-forge/libblasfeo-abi) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libblasfeo-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-abi) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libblasfeo-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-abi) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libblasfeo-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-abi) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-libblasfeo--microarch--abi-green.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libblasfeo-microarch-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libblasfeo-microarch-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libblasfeo-microarch-abi.svg)](https://anaconda.org/conda-forge/libblasfeo-microarch-abi) |
 
 Installing blasfeo
 ==================
@@ -89,7 +89,7 @@ How to use
 <summary>With conda</summary>
 
 ```
-conda install libblasfeo libblasfeo-abi
+conda install libblasfeo libblasfeo-microarch-abi
 ```
 
 </details>
@@ -98,7 +98,7 @@ conda install libblasfeo libblasfeo-abi
 <summary>With mamba</summary>
 
 ```
-mamba install libblasfeo libblasfeo-abi
+mamba install libblasfeo libblasfeo-microarch-abi
 ```
 
 </details>
@@ -108,9 +108,9 @@ mamba install libblasfeo libblasfeo-abi
 
 ```
 # for adding to your local project
-pixi add libblasfeo libblasfeo-abi
+pixi add libblasfeo libblasfeo-microarch-abi
 # for installing globally
-pixi global install libblasfeo libblasfeo-abi
+pixi global install libblasfeo libblasfeo-microarch-abi
 ```
 
 </details>
